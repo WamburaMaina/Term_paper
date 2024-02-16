@@ -1,0 +1,62 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  text-align: center;
+  padding: 5px;
+  background-color: #333;
+  color: white;
+}
+
+#map-container {
+  display: flex;
+}
+
+#map {
+  flex: 1;
+  height: 100vh;
+}
+
+#mapPanel {
+  flex: 0 0 300px;
+  background-color: #fff;
+  box-shadow: -5px 0 5px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+}
+
+.panel-content {
+  padding: 10px;
+  margin: 10px;
+  background: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+}
+
+.legend-symbol {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+}
+
+/* Added styling for legend items */
+#legendPanel p,
+#labelsPanel p,
+#filtersPanel p {
+  margin: 5px 0;
+}
+
+
+.label-health-center {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}

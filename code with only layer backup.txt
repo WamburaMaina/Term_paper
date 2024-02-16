@@ -1,0 +1,100 @@
+// Load GeoJSON data for counties
+fetch('Laikipia_county.geojson')
+    .then(response => response.json())
+    .then(countiesData => {
+        // Initialize the map with proper bounds
+        var map = L.map('map');
+
+        // Add two tile layers
+        var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        var esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '© Esri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AeroGRID, IGN, and the GIS User Community'
+        });
+
+        osmLayer.addTo(map); // Default layer
+
+        // Add GeoJSON layer for counties
+        var countiesLayer = L.geoJSON(countiesData, {
+            style: {
+                fillColor: 'lightblue',
+                weight: 2,
+                opacity: 1,
+                color: 'red',
+                fillOpacity: 0.7
+            }
+        });
+
+        // Load GeoJSON data for constituency
+        fetch('Constituency.geojson')
+            .then(response => response.json())
+            .then(constituencyData => {
+                // Add GeoJSON layer for constituency
+                var constituencyLayer = L.geoJSON(constituencyData, {
+                    style: {
+                        fillColor: 'orange',
+                        weight: 2,
+                        opacity: 1,
+                        color: 'black',
+                        fillOpacity: 0.7
+                    }
+                });
+
+                // Load GeoJSON data for sub-county
+                fetch('Sub_county.geojson')
+                    .then(response => response.json())
+                    .then(subCountyData => {
+                        // Add GeoJSON layer for sub-county
+                        var subCountyLayer = L.geoJSON(subCountyData, {
+                            style: {
+                                fillColor: 'none',
+                                weight: 2,
+                                opacity: 1,
+                                color: 'black',
+                                fillOpacity: 0.7
+                            }
+                        });
+
+                        // Load GeoJSON data for health centers
+                        fetch('Health_centers.geojson')
+                            .then(response => response.json())
+                            .then(healthCentersData => {
+                                // Add GeoJSON layer for health centers
+                                var healthCentersLayer = L.geoJSON(healthCentersData, {
+                                    pointToLayer: function (feature, latlng) {
+                                        return L.circleMarker(latlng, {
+                                            radius: 4, // Set the marker radius to 4
+                                            fillColor: 'red',
+                                            color: 'red',
+                                            weight: 1,
+                                            opacity: 1,
+                                            fillOpacity: 0.8
+                                        });
+                                    }
+                                });
+
+                                // Create layer groups for better control
+                                var baseLayers = {
+                                    "OpenStreetMap": osmLayer,
+                                    "ESRI Imagery": esriLayer
+                                };
+
+                                var overlays = {
+                                    "Counties": countiesLayer,
+                                    "Constituency": constituencyLayer,
+                                    "Sub County": subCountyLayer,
+                                    "Health Centers": healthCentersLayer
+                                };
+
+                                // Add tile layers and GeoJSON layers to the map
+                                L.control.layers(baseLayers, overlays).addTo(map);
+
+                                // Fit the map to the bounds of the GeoJSON data
+                                map.fitBounds(countiesLayer.getBounds());
+                            })
+                            .catch(error => console.error('Error loading health centers GeoJSON data:', error));
+                    })
+                    .catch(error => console.error('Error loading sub-county GeoJSON data:', error));
+            })
+            .catch(error => console.error('Error loading constituency GeoJSON data:', error));
+    })
+    .catch(error => console.error('Error loading county GeoJSON data:', error));
